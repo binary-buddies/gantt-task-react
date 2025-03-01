@@ -1,6 +1,6 @@
 {
   "name": "@binarybuddies/gantt-task-react",
-  "version": "0.0.5",
+  "version": "0.0.4",
   "description": "Interactive Gantt Chart for React with TypeScript",
   "author": "BB <binary-buddies@users.noreply.github.com>",
   "homepage": "https://github.com/binary-buddies/gantt-task-react/blob/main/README.md#gantt-task-react",
@@ -59,7 +59,9 @@
     "@floating-ui/dom": "1.1.1",
     "@floating-ui/react": "0.19.2",
     "date-fns": "2.29.3",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "react-popper": "^2.3.0",
+    "styled-components": "^6.1.15"
   },
   "overrides": {
     "typescript": "~5.1.6"

@@ -27,9 +27,8 @@ export const TaskListHeaderActions: React.FC<TaskListHeaderActionsProps> =
   ({
      onCollapseAll,
      onExpandFirstLevel,
-     onExpandAll,
-     colors
-   }) => {
+     onExpandAll
+    }) => {
     return (
         <div className={style.taskListHeaderAction}>
           <CustomTooltip title={"Collapse All"}>

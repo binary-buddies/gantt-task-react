@@ -1,10 +1,11 @@
 import React, { memo, SyntheticEvent, useMemo } from "react";
 import type { CSSProperties, RefObject } from "react";
+import styled from "styled-components";
 
 import { GridProps, Grid } from "../grid/grid";
 import { CalendarProps, Calendar } from "../calendar/calendar";
 import { TaskGanttContentProps, TaskGanttContent } from "./task-gantt-content";
-import styles from "./gantt.module.css";
+import { usePopper } from 'react-popper';
 import {
   TaskContextualPaletteProps,
   Task,
@@ -30,6 +31,13 @@ export type TaskGanttProps = {
   ) => void;
   colors: Partial<ColorStyles>
 };
+
+const StyledDiv = styled.div`
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  padding: 8px;
+`;
 
 const TaskGanttInner: React.FC<TaskGanttProps> = (props) => {
   const {
@@ -78,9 +86,10 @@ const TaskGanttInner: React.FC<TaskGanttProps> = (props) => {
     ]
   );
 
-  const [arrowAnchorEl, setArrowAnchorEl] = React.useState<null | SVGElement>(
-    null
-  );
+  const [arrowAnchorEl, setArrowAnchorEl] = React.useState<null | SVGElement>(null);
+  const [arrowPopperElement, setArrowPopperElement] = React.useState<null | HTMLDivElement>(null);
+  const { styles: arrowStyles, attributes: arrowAttributes } = usePopper(arrowAnchorEl, arrowPopperElement);
+
   const [selectedDependency, setSelectedDependency] = React.useState<{
     taskFrom: Task;
     extremityFrom: DateExtremity;
@@ -121,20 +130,6 @@ const TaskGanttInner: React.FC<TaskGanttProps> = (props) => {
     arrowContextualPalette = <div></div>;
   }
 
-  const onArrowClickAway = (e: MouseEvent | TouchEvent) => {
-    const svgElement = e.target as SVGElement;
-    if (svgElement) {
-      const keepPalette =
-        svgElement.ownerSVGElement?.classList.contains("ArrowClassName");
-      // In a better world the contextual palette should be defined in TaskItem component but ClickAwayListener and Popper uses div that are not displayed in svg
-      // So in order to let the palette open when clicking on another task, this checks if the user clicked on another task
-      if (!keepPalette) {
-        setArrowAnchorEl(null);
-        setSelectedDependency(null);
-      }
-    }
-  };
-
   // Manage the contextual palette
   const [anchorEl, setAnchorEl] = React.useState<null | SVGElement>(null);
   const [selectedTask, setSelectedTask] = React.useState<Task>(null);
@@ -164,56 +159,34 @@ const TaskGanttInner: React.FC<TaskGanttProps> = (props) => {
     contextualPalette = <div></div>;
   }
 
-  const onClickAway = (e: MouseEvent | TouchEvent) => {
-    const svgElement = e.target as SVGElement;
-    if (svgElement) {
-      const keepPalette =
-        svgElement.ownerSVGElement?.classList.contains("TaskItemClassName");
-      // In a better world the contextual palette should be defined in TaskItem component but ClickAwayListener and Popper uses div that are not displayed in svg
-      // So in order to let the palette open when clicking on another task, this checks if the user clicked on another task
-      if (!keepPalette) {
+  const [popperElement, setPopperElement] = React.useState<null | HTMLDivElement>(null);
+  const { styles, attributes } = usePopper(anchorEl, popperElement);
+
+  React.useEffect(() => {
+    const handleClickAway = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node;
+      if (popperElement && !popperElement.contains(target) && anchorEl && !anchorEl.contains(target)) {
         setAnchorEl(null);
         setSelectedTask(null);
       }
-    }
-  };
-
-  // Custom Popper component
-  const CustomPopper: React.FC<{ open: boolean; anchorEl: HTMLElement | null; children: React.ReactNode }> = ({ open, anchorEl, children }) => {
-    if (!open || !anchorEl) return null;
-    const style = {
-      position: 'absolute',
-      top: anchorEl.getBoundingClientRect().top,
-      left: anchorEl.getBoundingClientRect().left,
-      zIndex: 1000,
-    };
-    return <div style={style}>{children}</div>;
-  };
-
-  // Custom ClickAwayListener component
-  const CustomClickAwayListener: React.FC<{ onClickAway: (event: MouseEvent | TouchEvent) => void; children: React.ReactNode }> = ({ onClickAway, children }) => {
-    const handleClick = (event: MouseEvent | TouchEvent) => {
-      if (event.target instanceof Node && !event.currentTarget.contains(event.target)) {
-        onClickAway(event);
+      if (arrowPopperElement && !arrowPopperElement.contains(target) && arrowAnchorEl && !arrowAnchorEl.contains(target)) {
+        setArrowAnchorEl(null);
+        setSelectedDependency(null);
       }
     };
 
-    return <div onClick={handleClick}>{children}</div>;
-  };
+    document.addEventListener('mousedown', handleClickAway);
+    document.addEventListener('touchstart', handleClickAway);
 
-  // Custom Paper component
-  const CustomPaper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const style = {
-      background: '#fff',
-      padding: '10px',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+    return () => {
+      document.removeEventListener('mousedown', handleClickAway);
+      document.removeEventListener('touchstart', handleClickAway);
     };
-    return <div style={style}>{children}</div>;
-  };
+  }, [popperElement, anchorEl, arrowPopperElement, arrowAnchorEl]);
 
   return (
     <div
-      className={styles.ganttTaskRoot}
+      className={styles.ganttTaskRoot as string}
       ref={ganttTaskRootRef}
       onScroll={onVerticalScrollbarScrollX}
       dir="ltr"
@@ -222,7 +195,7 @@ const TaskGanttInner: React.FC<TaskGanttProps> = (props) => {
 
       <div
         ref={ganttTaskContentRef}
-        className={styles.ganttTaskContent}
+        className={styles.ganttTaskContent as string}
         style={containerStyle}
         onScroll={onScrollVertically}
       >
@@ -246,25 +219,23 @@ const TaskGanttInner: React.FC<TaskGanttProps> = (props) => {
           </svg>
         </div>
         {barProps.ContextualPalette && open && (
-          <CustomClickAwayListener onClickAway={onClickAway}>
-            <CustomPopper
-              open={open}
-              anchorEl={anchorEl}
-            >
-              <CustomPaper>{contextualPalette}</CustomPaper>
-            </CustomPopper>
-          </CustomClickAwayListener>
+          <div
+            ref={setPopperElement}
+            style={styles.popper}
+            {...attributes.popper}
+          >
+            <StyledDiv>{contextualPalette}</StyledDiv>
+          </div>
         )}
         {barProps.TaskDependencyContextualPalette &&
           isArrowContextualPaletteOpened && (
-            <CustomClickAwayListener onClickAway={onArrowClickAway}>
-              <CustomPopper
-                open={isArrowContextualPaletteOpened}
-                anchorEl={arrowAnchorEl}
-              >
-                <CustomPaper>{arrowContextualPalette}</CustomPaper>
-              </CustomPopper>
-            </CustomClickAwayListener>
+            <div
+              ref={setArrowPopperElement}
+              style={arrowStyles.popper}
+              {...arrowAttributes.popper}
+            >
+              <StyledDiv>{arrowContextualPalette}</StyledDiv>
+            </div>
           )}
       </div>
     </div>
