@@ -17,10 +17,6 @@ import {
 import { initTasks, onAddTask, onEditTask } from "./helper";
 
 import "../dist/style.css";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import styles from "./CustomPalette_Zoom.module.css";
 
 export const CustomPalette_Zoom: React.FC = props => {
@@ -130,39 +126,44 @@ export const CustomPalette_Zoom: React.FC = props => {
     }
   };
 
+  // Define custom button and icon components
+  const CustomButton = ({ onClick, title, children }) => (
+    <button onClick={onClick} title={title}>
+      {children}
+    </button>
+  );
+
+  const CloseIcon = () => <span>[Close]</span>;
+  const AddIcon = () => <span>[Add]</span>;
+  const DeleteForeverIcon = () => <span>[Delete]</span>;
+
   const ContextualPalette: React.FC<TaskContextualPaletteProps> = ({
     selectedTask,
     onClosePalette: onClose,
   }) => {
     return (
       <div className={styles.buttonEntries}>
-        <IconButton
-          size="small"
-          aria-label="Delete task"
+        <CustomButton
           title="Delete task"
           onClick={() => handleTaskDelete(selectedTask)}
           data-testid="delete-task"
         >
-          <DeleteForeverIcon fontSize="small" />
-        </IconButton>
-        <IconButton
-          size="small"
-          aria-label="Create task"
+          <DeleteForeverIcon />
+        </CustomButton>
+        <CustomButton
           title="Create task"
           onClick={() => handleTaskCreate(selectedTask)}
           data-testid="create-task"
         >
-          <AddIcon fontSize="small" />
-        </IconButton>
-        <IconButton
-          size="small"
-          aria-label="Close toolbar"
+          <AddIcon />
+        </CustomButton>
+        <CustomButton
           title="Close toolbar"
           onClick={onClose}
           data-testid="close-toolbar"
         >
-          <CloseIcon fontSize="small" />
-        </IconButton>
+          <CloseIcon />
+        </CustomButton>
       </div>
     );
   };
@@ -204,9 +205,7 @@ export const CustomPalette_Zoom: React.FC = props => {
   }) => {
     return (
       <div className={styles.buttonEntries}>
-        <IconButton
-          size="small"
-          aria-label="Delete task"
+        <CustomButton
           title="Delete task"
           onClick={() =>
             handleTaskDependencyDelete(
@@ -219,17 +218,15 @@ export const CustomPalette_Zoom: React.FC = props => {
           }
           data-testid="delete-task"
         >
-          <DeleteForeverIcon fontSize="small" />
-        </IconButton>
-        <IconButton
-          size="small"
-          aria-label="Close toolbar"
+          <DeleteForeverIcon />
+        </CustomButton>
+        <CustomButton
           title="Close toolbar"
           onClick={onClose}
           data-testid="close-toolbar"
         >
-          <CloseIcon fontSize="small" />
-        </IconButton>
+          <CloseIcon />
+        </CustomButton>
       </div>
     );
   };

@@ -1,8 +1,20 @@
 import React from "react";
-import { UnfoldLess, UnfoldMore, UnfoldMoreDouble } from "@mui/icons-material";
-import { createTheme, IconButton, Theme, ThemeOptions, ThemeProvider, Tooltip } from "@mui/material";
 import style from "./TaskListHeaderActions.module.css";
 import { ColorStyles } from "../../types/public-types";
+import { MdUnfoldLess, MdUnfoldMore, MdUnfoldMoreDouble } from "react-icons/md";
+
+// Define custom Tooltip and IconButton components
+const CustomTooltip: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
+  <div className="custom-tooltip" title={title}>
+    {children}
+  </div>
+);
+
+const CustomIconButton: React.FC<{ onClick: () => void, children: React.ReactNode }> = ({ onClick, children }) => (
+  <button className="custom-icon-button" onClick={onClick}>
+    {children}
+  </button>
+);
 
 export type TaskListHeaderActionsProps = {
   onCollapseAll: () => void;
@@ -18,73 +30,23 @@ export const TaskListHeaderActions: React.FC<TaskListHeaderActionsProps> =
      onExpandAll,
      colors
    }) => {
-
-    let themeOptions: ThemeOptions = {
-      palette: {
-        primary: {
-          main: colors.barLabelColor // Maps to a primary color (e.g., task bar background)
-        },
-        secondary: {
-          main: colors.barLabelColor // Maps to a secondary color (e.g., task progress)
-        },
-        background: {
-          default: colors.evenTaskBackgroundColor, // Background color for even tasks
-          paper: colors.oddTaskBackgroundColor // Background color for odd tasks or paper elements
-        },
-        text: {
-          primary: colors.barLabelColor, // Main text color (bar labels, etc.)
-          secondary: colors.barLabelColor // Context menu text color
-        },
-      },
-      components: {
-        MuiButton: {
-          styleOverrides: {
-            root: {
-              color: colors.barLabelColor // Use the bar label color for button text
-            }
-          }
-        },
-        MuiTooltip: {
-          styleOverrides: {
-            tooltip: {
-              backgroundColor: colors.contextMenuBgColor, // Tooltip background color
-              color: colors.contextMenuTextColor // Tooltip text color
-            }
-          }
-        },
-        MuiSvgIcon: {
-          styleOverrides: {
-            root: {
-              color: colors.barLabelColor, // Apply primary icon color to all icons
-              '&.MuiSvgIcon-colorSecondary': {
-                color:  colors.barLabelWhenOutsideColor, // Apply secondary color to icons
-              },
-            },
-          },
-        },
-      }
-    };
-    const materialLightTheme: Theme = createTheme(themeOptions);
-
     return (
-      <ThemeProvider theme={materialLightTheme}>
         <div className={style.taskListHeaderAction}>
-          <Tooltip title={"Collapse All"}>
-            <IconButton onClick={onCollapseAll}>
-              <UnfoldLess />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={"Expand First Level"}>
-            <IconButton onClick={onExpandFirstLevel}>
-              <UnfoldMore />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={"Expand All"}>
-            <IconButton onClick={onExpandAll}>
-              <UnfoldMoreDouble />
-            </IconButton>
-          </Tooltip>
+          <CustomTooltip title={"Collapse All"}>
+            <CustomIconButton onClick={onCollapseAll}>
+              <MdUnfoldLess />
+            </CustomIconButton>
+          </CustomTooltip>
+          <CustomTooltip title={"Expand First Level"}>
+            <CustomIconButton onClick={onExpandFirstLevel}>
+              <MdUnfoldMore />
+            </CustomIconButton>
+          </CustomTooltip>
+          <CustomTooltip title={"Expand All"}>
+            <CustomIconButton onClick={onExpandAll}>
+              <MdUnfoldMoreDouble />
+            </CustomIconButton>
+          </CustomTooltip>
         </div>
-      </ThemeProvider>
     );
   };

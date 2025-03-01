@@ -5,8 +5,6 @@ import { GridProps, Grid } from "../grid/grid";
 import { CalendarProps, Calendar } from "../calendar/calendar";
 import { TaskGanttContentProps, TaskGanttContent } from "./task-gantt-content";
 import styles from "./gantt.module.css";
-import Popper from "@mui/material/Popper";
-import Paper from "@mui/material/Paper";
 import {
   TaskContextualPaletteProps,
   Task,
@@ -14,7 +12,6 @@ import {
   DateExtremity,
   TaskDependencyContextualPaletteProps, ColorStyles
 } from "../../types/public-types";
-import ClickAwayListener from "@mui/material/ClickAwayListener";
 
 export type TaskGanttProps = {
   barProps: TaskGanttContentProps;
@@ -180,6 +177,40 @@ const TaskGanttInner: React.FC<TaskGanttProps> = (props) => {
       }
     }
   };
+
+  // Custom Popper component
+  const CustomPopper: React.FC<{ open: boolean; anchorEl: HTMLElement | null; children: React.ReactNode }> = ({ open, anchorEl, children }) => {
+    if (!open || !anchorEl) return null;
+    const style = {
+      position: 'absolute',
+      top: anchorEl.getBoundingClientRect().top,
+      left: anchorEl.getBoundingClientRect().left,
+      zIndex: 1000,
+    };
+    return <div style={style}>{children}</div>;
+  };
+
+  // Custom ClickAwayListener component
+  const CustomClickAwayListener: React.FC<{ onClickAway: (event: MouseEvent | TouchEvent) => void; children: React.ReactNode }> = ({ onClickAway, children }) => {
+    const handleClick = (event: MouseEvent | TouchEvent) => {
+      if (event.target instanceof Node && !event.currentTarget.contains(event.target)) {
+        onClickAway(event);
+      }
+    };
+
+    return <div onClick={handleClick}>{children}</div>;
+  };
+
+  // Custom Paper component
+  const CustomPaper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const style = {
+      background: '#fff',
+      padding: '10px',
+      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+    };
+    return <div style={style}>{children}</div>;
+  };
+
   return (
     <div
       className={styles.ganttTaskRoot}
@@ -215,31 +246,25 @@ const TaskGanttInner: React.FC<TaskGanttProps> = (props) => {
           </svg>
         </div>
         {barProps.ContextualPalette && open && (
-          <ClickAwayListener onClickAway={onClickAway}>
-            <Popper
-              key={`contextual-palette`}
+          <CustomClickAwayListener onClickAway={onClickAway}>
+            <CustomPopper
               open={open}
               anchorEl={anchorEl}
-              disablePortal
-              placement="top"
             >
-              <Paper>{contextualPalette}</Paper>
-            </Popper>
-          </ClickAwayListener>
+              <CustomPaper>{contextualPalette}</CustomPaper>
+            </CustomPopper>
+          </CustomClickAwayListener>
         )}
         {barProps.TaskDependencyContextualPalette &&
           isArrowContextualPaletteOpened && (
-            <ClickAwayListener onClickAway={onArrowClickAway}>
-              <Popper
-                key={`dependency-contextual-palette`}
+            <CustomClickAwayListener onClickAway={onArrowClickAway}>
+              <CustomPopper
                 open={isArrowContextualPaletteOpened}
                 anchorEl={arrowAnchorEl}
-                disablePortal
-                placement="top"
               >
-                <Paper>{arrowContextualPalette}</Paper>
-              </Popper>
-            </ClickAwayListener>
+                <CustomPaper>{arrowContextualPalette}</CustomPaper>
+              </CustomPopper>
+            </CustomClickAwayListener>
           )}
       </div>
     </div>
