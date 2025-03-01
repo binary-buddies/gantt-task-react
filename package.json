@@ -1,6 +1,6 @@
 {
   "name": "@binarybuddies/gantt-task-react",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Interactive Gantt Chart for React with TypeScript",
   "author": "BB <binary-buddies@users.noreply.github.com>",
   "homepage": "https://github.com/binary-buddies/gantt-task-react/blob/main/README.md#gantt-task-react",
@@ -26,8 +26,8 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "main": "./dist/gantt-task-react.umd.ts",
-  "module": "./dist/gantt-task-react.es.ts",
+  "main": "./dist/gantt-task-react.umd.js",
+  "module": "./dist/gantt-task-react.es.js",
   "types": "./dist/index.d.ts",
   "source": "src/index.tsx",
   "keywords": [
