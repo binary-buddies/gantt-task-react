@@ -1,6 +1,6 @@
 {
   "name": "@binarybuddies/gantt-task-react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Interactive Gantt Chart for React with TypeScript",
   "author": "BB <binary-buddies@users.noreply.github.com>",
   "homepage": "https://github.com/binary-buddies/gantt-task-react/blob/main/README.md#gantt-task-react",
