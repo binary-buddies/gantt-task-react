@@ -13,7 +13,7 @@ export default defineConfig(() => {
         name: "gantt-task-react",
         entry: path.resolve(__dirname, "src/index.tsx"),
         formats: ["es", "umd"],
-        fileName: format => `gantt-task-react.${format}.ts`,
+        fileName: format => `gantt-task-react.${format}.js`,
       },
     },
     test: {
