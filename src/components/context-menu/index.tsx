@@ -147,8 +147,8 @@ export function ContextMenu({
           ref={setFloatingRef}
           style={{
             position: strategy,
-            top: menuY ?? 0,
-            left: menuX ?? 0,
+            top: menuY || 0,
+            left: menuX || 0,
             width: "max-content",
             backgroundColor: contextMenuBgColor,
             boxShadow: contextMenuBoxShadow,

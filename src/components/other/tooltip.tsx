@@ -42,8 +42,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
       ref={setFloatingRef}
       style={{
         position: tooltipStrategy,
-        top: tooltipY ?? 0,
-        left: tooltipX ?? 0,
+        top: tooltipY || 0,
+        left: tooltipX || 0,
         width: 'max-content',
       }}
       {...getFloatingProps()}
